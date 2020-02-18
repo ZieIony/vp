@@ -3,7 +3,6 @@ package com.vp.detail.viewmodel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.vp.detail.DetailActivity
 import com.vp.detail.model.MovieDetail
 import com.vp.detail.service.DetailService
 import com.vp.movies.persistence.FavouritesRepository
@@ -31,10 +30,9 @@ class DetailsViewModel @Inject constructor(
 
     fun state(): LiveData<LoadingState> = loadingState
 
-    fun fetchDetails() {
+    fun fetchDetails(movieId: String) {
         loadingState.value = LoadingState.IN_PROGRESS
         favourite.value = FavouriteState.IN_PROGRESS
-        val movieId = DetailActivity.queryProvider.getMovieId()
         detailService.getMovie(movieId).enqueue(object : Callback, retrofit2.Callback<MovieDetail> {
             override fun onResponse(call: Call<MovieDetail>?, response: Response<MovieDetail>?) {
                 details.postValue(response?.body())
@@ -59,9 +57,8 @@ class DetailsViewModel @Inject constructor(
         })
     }
 
-    fun toggleFavourite() {
+    fun toggleFavourite(movieId: String) {
         // TODO: make me async some day
-        val movieId = DetailActivity.queryProvider.getMovieId()
         favourite.value = FavouriteState.IN_PROGRESS
         if (favouritesRepository.isFavourite(movieId)) {
             favouritesRepository.removeFromFavourites(movieId)
