@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation project(':persistence')
     implementation project(':features:list')
     implementation project(':features:detail')
     implementation project(':features:favorites')
