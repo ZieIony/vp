@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.vp.list.viewmodel.ListViewModel;
@@ -38,6 +39,7 @@ public class ListFragment extends Fragment implements GridPagingScrollListener.L
     private GridPagingScrollListener gridPagingScrollListener;
     private ListAdapter listAdapter;
     private ViewAnimator viewAnimator;
+    private SwipeRefreshLayout swipeRefresh;
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView errorTextView;
@@ -59,6 +61,7 @@ public class ListFragment extends Fragment implements GridPagingScrollListener.L
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        swipeRefresh = view.findViewById(R.id.swipeRefresh);
         recyclerView = view.findViewById(R.id.recyclerView);
         viewAnimator = view.findViewById(R.id.viewAnimator);
         progressBar = view.findViewById(R.id.progressBar);
@@ -67,6 +70,8 @@ public class ListFragment extends Fragment implements GridPagingScrollListener.L
         if (savedInstanceState != null) {
             currentQuery = savedInstanceState.getString(CURRENT_QUERY);
         }
+
+        swipeRefresh.setOnRefreshListener(() -> listViewModel.searchMoviesByTitle(currentQuery, 1));
 
         initBottomNavigation(view);
         initList();
@@ -111,7 +116,8 @@ public class ListFragment extends Fragment implements GridPagingScrollListener.L
     }
 
     private void showList() {
-        viewAnimator.setDisplayedChild(viewAnimator.indexOfChild(recyclerView));
+        viewAnimator.setDisplayedChild(viewAnimator.indexOfChild(swipeRefresh));
+        swipeRefresh.setRefreshing(false);
     }
 
     private void showError() {
